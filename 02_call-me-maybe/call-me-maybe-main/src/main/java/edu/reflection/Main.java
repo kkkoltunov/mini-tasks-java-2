@@ -1,5 +1,6 @@
 package edu.reflection;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class Main {
@@ -13,7 +14,20 @@ public class Main {
 		String output = "Введите имя класса или \"exit\": ";
 		String className = readString(output);
 		while (!className.equals("exit")) {
-			CallMethod.Call(className);
+			try {
+				CallMethod.call(className);
+			} catch (ClassNotFoundException e) {
+				System.out.println("Класса '" + className + "' нет!");
+			} catch (NoSuchMethodException e) {
+				System.out.println("У класса '" + className + "' нет конструктора без параметров!");
+			} catch (InstantiationException e) {
+				System.out.println("У класса нет конструктора без параметров или объект класса представляет абстрактный " +
+						"класс, интерфейс, класс массива, примитивный тип или void!");
+			} catch (IllegalAccessException e) {
+				System.out.println("Нет доступа!");
+			} catch (InvocationTargetException e) {
+				System.out.println("Базовый метод вызвал исключение!");
+			}
 			className = readString(output);
 		}
 		System.out.println("Goodbye!");
