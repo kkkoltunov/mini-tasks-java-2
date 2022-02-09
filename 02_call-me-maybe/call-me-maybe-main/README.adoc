@@ -1,0 +1,81 @@
+= Call Me Maybe
+
+== Задача
+
+. Найти класс по имени
+. Создать его экземпляр
+. Найти все методы с аннотацией link:src/main/java/edu/reflection/CallMe.java[`CallMe`], включая `private` и `protected` методы
+. Вызвать методы у которых `maybe = true` в порядке, указанном в аннотации link:src/main/java/edu/reflection/Order.java[`Order.java`]
+. Логику пунктов 1, 2, 3, 4 вынести в отдельный метод отдельного класса -- не тот, что читает ввод от пользователя
+.. Написать для него тест
+. Обработать ошибки
+
+== Пример взаимодействия
+
+[source,text]
+----
+Введите имя класса или «exit»:
+> Foo
+Класса 'Foo' нет <1>
+> edu.reflection.CarlyRaeJepsen
+Hello
+Here's my number
+So call me
+> edu.MyClass
+У класса 'edu.MyClass' нет конструктора без параметров <2>
+Введите имя класса или «exit»:
+exit
+----
+
+<1> Здесь ловим https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ClassNotFoundException.html[`ClassNotFoundException`]
+<2> А здесь -- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NoSuchMethodException.html[`NoSuchMethodException`]
+
+== Что использовать
+
+. https://stackoverflow.com/q/37628/6486622[Reflection API]
+. https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/AnnotatedElement.html#getAnnotation(java.lang.Class)[`AnnotatedElement#getAnnotation`] вернёт аннотацию, если она есть у элемента.
+Примеры ``AnnotatedElement``'ов: `Class`, `Constructor`, `Method`
+. https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/AccessibleObject.html#trySetAccessible()[`AccessibleObject#trySetAccessible`] сделает элемент доступным
+** Пример: если поле или метод -- `private`, то `trySetAccessible` сделает поле или метод доступным.
+То есть так, чтобы вызов метода https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Field.html#get(java.lang.Object)[`Field#get`] или https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Method.html#invoke(java.lang.Object,java.lang.Object...)[`Method#invoke`] не кинул https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalAccessException.html[`IllegalAccessException`]
+** Вернёт `true`, если получилось, иначе -- `false`
+
+== Мини-пример
+
+=== Найти класс по имени и создать его экземпляр
+
+[source,java]
+----
+package edu.reflection;
+
+import java.lang.reflect.Constructor;
+
+public class Instantiate {
+	public static void main(String[] args) throws ReflectiveOperationException {
+		Class<?> clazz = Class.forName("edu.reflection.Instantiate"); // <1>
+		Constructor<?> constructor = clazz.getDeclaredConstructor(); // <2>
+		Object instance = constructor.newInstance(); // <3>
+		System.out.println(instance); // <4>
+	}
+}
+----
+
+<1> Ищем класс по имени, метод -- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html#forName(java.lang.String)[`Class#forName`]
+<2> Ищем конструктор без параметров -- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html#getDeclaredConstructor(java.lang.Class...)[`Class#getDeclaredConstructor`]
+<3> Создаём экземпляр -- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Constructor.html#newInstance(java.lang.Object...)[`Constructor#newInstance`]
+<4> Вывод
+
+Вывод программы:
+
+[source,text]
+----
+edu.reflection.Instantiate@3fee733d
+----
+
+== Ссылки
+
+* https://stackoverflow.com/q/16635025/6486622[Dosen't Reflection API break the very purpose of Data encapsulation?]
+
+== Срок
+
+До 23:59:59 по Москве 15 февраля
