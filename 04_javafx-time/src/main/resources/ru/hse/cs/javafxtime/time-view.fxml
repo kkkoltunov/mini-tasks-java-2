@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+
+<BorderPane fx:id="timePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.hse.cs.javafxtime.TimeController">
+   <bottom>
+      <Label text="Текст, который ты сейчас читаешь - это послание потомкам..." BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
+      <Label fx:id="dataHoursLabel" text="Здесь будет время" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Times New Roman Bold" size="50.0" />
+         </font>
+      </Label>
+   </center>
+</BorderPane>
