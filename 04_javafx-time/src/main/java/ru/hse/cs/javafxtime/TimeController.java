@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class TimeController {
@@ -16,9 +18,8 @@ public class TimeController {
         Thread thread = new Thread(() -> {
             while (true) {
                 try {
-                    Date date = new Date();
-                    SimpleDateFormat formatForTimeNow = new SimpleDateFormat("hh:mm:ss");
-                    Platform.runLater(() -> dataHoursLabel.setText(formatForTimeNow.format(date)));
+                    LocalTime time = LocalTime.now();
+                    Platform.runLater(() -> dataHoursLabel.setText(time.format(DateTimeFormatter.ofPattern("hh:mm:ss"))));
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
