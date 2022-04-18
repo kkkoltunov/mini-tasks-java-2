@@ -1,22 +1,14 @@
 package ru.hse.cs.server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.hse.cs.model.Mail;
-
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MailServer {
 
-    private final static ObjectMapper jackson = new ObjectMapper();
-    private final static List<Mail> mails = new ArrayList<>();
     private final static Logger logger = Logger.getLogger(MailServer.class.getName());
-    private static BufferedReader in;
-    private static BufferedWriter out;
 
     public static void main(String[] args) {
 
@@ -26,8 +18,7 @@ public class MailServer {
             new Thread(() -> acceptClients(serverSocket)).start();
             System.in.read();
         } catch (IOException e) {
-            logger.info(() -> "Server stopped");
-            logger.info(e::getMessage);
+            logger.log(Level.WARNING, "Server stopped!", e);
         }
     }
 
@@ -37,52 +28,17 @@ public class MailServer {
                 Socket socket = serverSocket.accept();
                 new Thread(() -> {
                     try {
-                        serveClient(socket);
+                        new ClientServe(logger).serveClient(socket);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.log(Level.WARNING, "Error while serve client!", e);
                     }
                 }).start();
             } catch (IOException e) {
+                logger.log(Level.WARNING, "Server error!", e);
                 if (serverSocket.isClosed()) {
                     break;
                 }
             }
         }
     }
-
-    private static void serveClient(Socket socket) throws IOException {
-        try (socket) {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-            while (true) {
-                String requestBody = in.readLine();
-                if (requestBody == null) {
-                    continue;
-                }
-                logger.info(() -> "REQUEST: " + requestBody);
-
-                if (requestBody.startsWith("POST")) {
-                    out.write("Сервер получил письмо!\n");
-                    out.flush();
-
-                    mails.add(jackson.readValue(requestBody.substring(5), Mail.class));
-                } else {
-                    List<Mail> selectMails = mails.stream()
-                            .filter(value -> value.getReceiverName().equals(requestBody.substring(4)))
-                            .toList();
-                    mails.removeAll(selectMails);
-
-                    logger.info(() -> "SELECT MAILS: " + selectMails);
-                    out.write(jackson.writeValueAsString(selectMails) + "\n");
-                    out.flush();
-                }
-            }
-        } finally {
-            socket.close();
-            in.close();
-            out.close();
-        }
-    }
-
 }
