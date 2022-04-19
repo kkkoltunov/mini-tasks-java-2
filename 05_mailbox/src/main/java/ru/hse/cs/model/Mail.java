@@ -9,15 +9,15 @@ public record Mail(String receiverName, String senderName, String text) {
         Objects.requireNonNull(text, "Сообщение не должно быть null!");
 
         if (receiverName.isBlank()) {
-            throw new NullPointerException("Имя получателя не должно быть пустым!");
+            throw new IllegalArgumentException("Имя получателя не должно быть пустым!");
         }
 
         if (senderName.isBlank()) {
-            throw new NullPointerException("Имя отправителя не должно быть пустым!");
+            throw new IllegalArgumentException("Имя отправителя не должно быть пустым!");
         }
 
         if (text.isBlank()) {
-            throw new NullPointerException("Сообщение не должно быть пустым!");
+            throw new IllegalArgumentException("Сообщение не должно быть пустым!");
         }
     }
 }
