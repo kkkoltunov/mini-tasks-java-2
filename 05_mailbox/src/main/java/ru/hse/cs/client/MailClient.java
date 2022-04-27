@@ -51,7 +51,7 @@ public class MailClient implements Closeable {
         });
     }
 
-    public void sendMail(Mail mail) throws IOException, MailBoxException {
+    public void sendMail(Mail mail) throws IOException {
         Objects.requireNonNull(mail, "Письмо не должно быть null!");
 
         String newMail = jackson.writeValueAsString(mail);

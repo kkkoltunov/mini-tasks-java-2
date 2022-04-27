@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,21 +18,21 @@ public class MailServer implements Closeable {
     private final ServerSocket serverSocket;
 
     private static final Logger logger = Logger.getLogger(MailServer.class.getName());
-    private static final int POST_PREFIX = 4;
-    private static final int GET_PREFIX = 3;
-    private static final int MESSAGE_BODY_START_POST = POST_PREFIX + 1;
-    private static final int MESSAGE_BODY_START_GET = GET_PREFIX + 1;
+    private static final String POST_PREFIX = "POST";
+    private static final String GET_PREFIX = "GET";
+    private static final int MESSAGE_BODY_START_POST = POST_PREFIX.length() + 1;
+    private static final int MESSAGE_BODY_START_GET = GET_PREFIX.length() + 1;
 
     public MailServer(int port) throws IOException {
         jackson = new ObjectMapper();
         serverSocket = new ServerSocket(port);
-        mails = new ArrayList<>();
+        mails = Collections.synchronizedList(new ArrayList<>());
         logger.info(() -> "Started server, '" + serverSocket + "'");
         logger.info(() -> "Press any key to stop");
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         try (serverSocket) {
 
         } catch (IOException e) {
@@ -67,10 +68,10 @@ public class MailServer implements Closeable {
                 }
                 logger.info(() -> "REQUEST: " + requestBody);
 
-                if (requestBody.startsWith("POST")) {
+                if (requestBody.startsWith(POST_PREFIX)) {
                     mails.add(jackson.readValue(requestBody.substring(MESSAGE_BODY_START_POST), Mail.class));
                     writeResponse("Сервер получил письмо!", out);
-                } else if (requestBody.startsWith("GET")) {
+                } else if (requestBody.startsWith(GET_PREFIX)) {
                     List<Mail> selectMails = mails.stream()
                             .filter(value -> value.receiverName().equals(requestBody.substring(MESSAGE_BODY_START_GET)))
                             .toList();
@@ -79,7 +80,7 @@ public class MailServer implements Closeable {
 
                     writeResponse(jackson.writeValueAsString(selectMails), out);
                 } else {
-                    writeResponse("Получен неверный запрос!", out);
+                    logger.log(Level.WARNING, "Bad request!");
                     close();
                 }
             }
