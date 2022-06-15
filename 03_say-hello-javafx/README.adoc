@@ -1,0 +1,27 @@
+= say-hello-javafx
+
+== Задача
+
+Написать JavaFX приложение.
+
+== Главый экран
+
+На главном экране:
+
+. Текстовое поле -- https://openjfx.io/javadoc/17/javafx.controls/javafx/scene/control/TextField.html[`TextField`]
+.. В нём пользователь пишет своё имя
+. Кнопка -- https://openjfx.io/javadoc/17/javafx.controls/javafx/scene/control/Button.html[`Button`]
+.. Пользователь нажимает на кнопку
+.. Приложение приветствует пользователя сообщением в https://openjfx.io/javadoc/17/javafx.controls/javafx/scene/control/Alert.html[``Alert``'е] по имени
+... Если пользователь не ввёл имя, то приложение приветствует любого другого человека
+. https://openjfx.io/javadoc/17/javafx.controls/javafx/scene/control/MenuBar.html[`MenuBar`] c меню «Help», в «Help» -- «About»
+.. Пользователь нажимает «About», а приложение выводит имя автора шедевра в https://openjfx.io/javadoc/17/javafx.controls/javafx/scene/control/Alert.html[``Alert``'е]
+
+== Технические требования
+
+. Добавить `module-info.java`
+. https://openjfx.io/openjfx-docs/#maven[Использовать maven]
+.. Archetype использовать не нужно, но нужно добавить зависимости на JavaFX, аналогично JUnit
+... `javafx-fxml` и `javafx-controls` должно хватить
+. JavaFX
+.. Используем FXML
